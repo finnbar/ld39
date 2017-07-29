@@ -10,7 +10,7 @@ SQUARES = {up = love.graphics.newImage("up.png"),
            wall = love.graphics.newImage("wall.png"),}
 NEW_AGENT_PROB = 0.07
 DEATH_RATE = 0.05
-KEEP_GOING = 1
+KEEP_GOING = 1 -- if you increase it above 1, it will do stuff.
 
 function makemaze()
     local maze = {}
@@ -23,7 +23,10 @@ function makemaze()
     local agents = {{pos = {i = math.floor(GRID_WIDTH / 2), j = GRID_HEIGHT}, alive = true, last = "left"},
                     {pos = {i = math.floor(GRID_WIDTH / 2), j = GRID_HEIGHT}, alive = true, last = "right"}}
     local agentcount = 2
-    for count=1,200 do
+    local movessincesuccess = 0
+    local unfinished = true
+    while unfinished do
+        local success = false
         for _, agent in ipairs(agents) do
             if agent.alive then
                 local i = agent.pos.i
@@ -43,7 +46,7 @@ function makemaze()
                 local walldestroyed = true
 
                 if direction == "left" then
-                    if wallcount(maze[i-1][j]) > 1 then
+                    if wallcount(maze[i-1][j]) > 2 then
                         maze[i-1][j]["right"] = false
                     else walldestroyed = false
                     end
@@ -51,7 +54,7 @@ function makemaze()
                         agent.pos.i = i - 1
                     end
                 elseif direction == "right" then
-                    if wallcount(maze[i+1][j]) > 1 then
+                    if wallcount(maze[i+1][j]) > 2 then
                         maze[i+1][j]["left"] = false
                     else walldestroyed = false
                     end
@@ -60,17 +63,18 @@ function makemaze()
                     end
                 elseif direction == "up" then
                     if j == 1 then
-                        return maze
-                    end
-                    if wallcount(maze[i][j-1]) > 1 then
-                        maze[i][j-1]["down"] = false
-                    else walldestroyed = false
-                    end
-                    if not newsquare(maze[i][j-1]) then
-                        agent.pos.j = j - 1
+                        unfinished = false
+                    else
+                        if wallcount(maze[i][j-1]) > 2 then
+                            maze[i][j-1]["down"] = false
+                        else walldestroyed = false
+                        end
+                        if not newsquare(maze[i][j-1]) then
+                            agent.pos.j = j - 1
+                        end
                     end
                 elseif direction == "down" then
-                    if wallcount(maze[i][j+1]) > 1 then
+                    if wallcount(maze[i][j+1]) > 2 then
                         maze[i][j+1]["up"] = false
                     else walldestroyed = false
                     end
@@ -83,6 +87,8 @@ function makemaze()
 
                 if walldestroyed then
                     maze[i][j][direction] = false
+                else
+                    success = true
                 end
 
                 if agent.alive then
@@ -100,8 +106,13 @@ function makemaze()
                 end
             end
         end
-        if agentcount == 0 then
-            -- ???
+        if success then
+            movessincesuccess = 0
+        else
+            movessincesuccess = movessincesuccess + 1
+            if movessincesuccess > 10 then
+                return makemaze()
+            end
         end
     end
     return maze

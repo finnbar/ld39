@@ -8,6 +8,7 @@ local gamestate
 
 function love.load()
     math.randomseed(os.time())
+    gamestate = title
     if gamestate.setup then gamestate.setup() end
 end
 
@@ -37,7 +38,7 @@ end
 
 function love.quit()
     local toQuit
-    toQuit = true
+    toQuit = false
     if gamestate.quit then gamestate, toQuit = gamestate.quit() end
     return toQuit
 end

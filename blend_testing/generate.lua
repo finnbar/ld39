@@ -91,7 +91,7 @@ function makechoice(probs)
 end
 
 function drawmaze(maze)
-    love.graphics.setBackgroundColor(255, 255, 255)
+    --love.graphics.setBackgroundColor(255, 255, 255)
     for i=1,GRID_WIDTH do
         for j=1,GRID_HEIGHT do
             for k,d in ipairs(DIRECTIONS) do

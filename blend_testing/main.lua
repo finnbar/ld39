@@ -9,22 +9,24 @@ hide = true
 function love.load()
     math.randomseed(os.time())
     maze = makemaze()
+    canvas = love.graphics.newCanvas()
 end
 
 function love.draw()
-    local x, y = love.mouse.getPosition()
-    if hide then
-        love.graphics.setBlendMode("alpha", "alphamultiply")
-        love.graphics.setColor(255,255,255)
-        love.graphics.circle("fill",x,y,50)
-        love.graphics.setBlendMode("darken", "premultiplied")
-    end
-    love.graphics.setColor(255, 255, 255, 100)
+    love.graphics.setBlendMode("alpha", "premultiplied")
+    local x,y = love.mouse.getPosition()
     drawmaze(maze)
     if hide then
-        love.graphics.setBlendMode("alpha", "alphamultiply")
-        love.graphics.setColor(250, 0, 0)
-        love.graphics.circle("line",x,y,50)
+        love.graphics.setCanvas(canvas)
+            love.graphics.clear()
+            love.graphics.setColor(0,0,0)
+            love.graphics.rectangle("fill",0,0,800,600)
+            love.graphics.setBlendMode("lighten", "premultiplied")
+            love.graphics.setColor(255,255,255,255)
+            love.graphics.circle("fill",x,y,50)
+        love.graphics.setCanvas()
+        love.graphics.setBlendMode("darken", "premultiplied")
+        love.graphics.draw(canvas,0,0)
     end
 end
 

@@ -20,9 +20,9 @@ function makemaze()
             maze[i][j] = {left = true, right = true, up = true, down = true}
         end
     end
-    local agents = {{pos = {i = math.floor(GRID_WIDTH / 2), j = GRID_HEIGHT}, alive = true, last = "left"}, 
+    local agents = {{pos = {i = math.floor(GRID_WIDTH / 2), j = GRID_HEIGHT}, alive = true, last = "left"},
                     {pos = {i = math.floor(GRID_WIDTH / 2), j = GRID_HEIGHT}, alive = true, last = "right"}}
-    local agentcount = 1
+    local agentcount = 2
     for count=1,200 do
         for _, agent in ipairs(agents) do
             if agent.alive then
@@ -30,6 +30,7 @@ function makemaze()
                 local j = agent.pos.j
                 local probs = deepcopy(PROBABILITIES)
 
+                -- Edges, and code to increase probability of keeping going left/right
                 if i == 1 then probs.left = 0 end
                 if i == GRID_WIDTH then probs.right = 0 end
                 if j == GRID_HEIGHT then probs.down = 0 end
@@ -39,43 +40,84 @@ function makemaze()
 
                 local direction = makechoice(probs)
                 agent.last = direction
-                maze[i][j][direction] = false
-                
+                local walldestroyed = true
+
                 if direction == "left" then
-                    agent.pos.i = i - 1
-                    maze[i-1][j]["right"] = false
+                    if wallcount(maze[i-1][j]) > 1 then
+                        maze[i-1][j]["right"] = false
+                    else walldestroyed = false
+                    end
+                    if not newsquare(maze[i-1][j]) then
+                        agent.pos.i = i - 1
+                    end
                 elseif direction == "right" then
-                    agent.pos.i = i + 1
-                    maze[i+1][j]["left"] = false
+                    if wallcount(maze[i+1][j]) > 1 then
+                        maze[i+1][j]["left"] = false
+                    else walldestroyed = false
+                    end
+                    if not newsquare(maze[i+1][j]) then
+                        agent.pos.i = i + 1
+                    end
                 elseif direction == "up" then
                     if j == 1 then
                         return maze
                     end
-                    agent.pos.j = j - 1
-                    maze[i][j-1]["down"] = false
+                    if wallcount(maze[i][j-1]) > 1 then
+                        maze[i][j-1]["down"] = false
+                    else walldestroyed = false
+                    end
+                    if not newsquare(maze[i][j-1]) then
+                        agent.pos.j = j - 1
+                    end
                 elseif direction == "down" then
-                    agent.pos.j = j + 1
-                    maze[i][j+1]["up"] = false
+                    if wallcount(maze[i][j+1]) > 1 then
+                        maze[i][j+1]["up"] = false
+                    else walldestroyed = false
+                    end
+                    if not newsquare(maze[i][j+1]) then
+                        agent.pos.j = j + 1
+                    end
                 elseif direction == "none" then
                     agent.alive = false
                 end
 
-                if math.random() < NEW_AGENT_PROB then
-                    local newagent = deepcopy(agent)
-                    newagent.last = opposite(agent.last)
-                    table.insert(agents, deepcopy(agent))
-                    agentcount = agentcount + 1
+                if walldestroyed then
+                    maze[i][j][direction] = false
                 end
 
-                if agentcount > 1 and math.random() < DEATH_RATE then
-                    agent.alive = false
-                    agentcount = agentcount - 1
+                if agent.alive then
+                    if math.random() < NEW_AGENT_PROB then
+                        local newagent = deepcopy(agent)
+                        newagent.last = opposite(agent.last)
+                        table.insert(agents, deepcopy(agent))
+                        agentcount = agentcount + 1
+                    end
+
+                    if agentcount > 1 and math.random() < DEATH_RATE then
+                        agent.alive = false
+                        agentcount = agentcount - 1
+                    end
                 end
             end
         end
+        if agentcount == 0 then
+            -- ???
+        end
     end
     return maze
-end   
+end
+
+function newsquare(square)
+    return square["up"] and square["down"] and square["left"] and square["right"]
+end
+
+function wallcount(square)
+    total = 0
+    for _,v in pairs({"up", "down", "left", "right"}) do
+        if square[v] then total = total + 1 end
+    end
+    return total
+end
 
 function makechoice(probs)
     local t = probs["up"] + probs["down"] + probs["left"] + probs["right"]
@@ -104,7 +146,7 @@ function drawmaze(maze)
                 love.graphics.draw(SQUARES.wall, (i-1)*SQUARE_SIZE, (j-1)*SQUARE_SIZE, 0, 2)
             end
         end
-    end 
+    end
 end
 
 function opposite(direction)

@@ -6,6 +6,7 @@ end
 
 function love.load()
     math.randomseed(os.time())
+    love.graphics.setDefaultFilter('nearest', 'nearest')
     maze = makemaze()
 end
 

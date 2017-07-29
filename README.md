@@ -1,2 +1,2 @@
 # ld39
-whaaaaat (might actually be submitted, we're not sure yet)
+Cool exploration game in the dark because your torch is running out of power, which is very sad. Try to get out of the mine with limited light and your trusty notebook.

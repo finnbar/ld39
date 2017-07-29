@@ -12,7 +12,7 @@ end
 function love.draw()
     love.graphics.setBlendMode("alpha", "alphamultiply")
     love.graphics.setColor(255,255,255)
-    local x, y = love.mouse.getPosition( )
+    local x, y = love.mouse.getPosition()
     love.graphics.circle("fill",x,y,50)
     love.graphics.setBlendMode("darken", "premultiplied")
     love.graphics.setColor(255, 255, 255, 100)

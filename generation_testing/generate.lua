@@ -3,14 +3,17 @@ GRID_HEIGHT = 30
 SQUARE_SIZE = 20
 DIRECTIONS = {"up", "down", "left", "right"}
 PROBABILITIES = {up = 0.15, down = 0.05, left = 0.4, right = 0.4}
-SQUARES = {up = love.graphics.newImage("up.png"),
-           down = love.graphics.newImage("down.png"),
-           left = love.graphics.newImage("left.png"),
-           right = love.graphics.newImage("right.png"),
-           wall = love.graphics.newImage("wall.png"),}
 NEW_AGENT_PROB = 0.07
 DEATH_RATE = 0.05
 KEEP_GOING = 1
+
+img = love.graphics.newImage("tileset.png")
+
+SQUARES = {up = love.graphics.newQuad(8*32, 0, 32, 32, img:getDimensions()),
+           down = love.graphics.newQuad(6*32, 0, 32, 32, img:getDimensions()),
+           left = love.graphics.newQuad(5*32, 0, 32, 32, img:getDimensions()),
+           right =love.graphics.newQuad(7*32, 0, 32, 32, img:getDimensions()),
+           wall = love.graphics.newQuad(4*32, 0, 32, 32, img:getDimensions()),}
 
 function makemaze()
     local maze = {}
@@ -138,12 +141,11 @@ function drawmaze(maze)
         for j=1,GRID_HEIGHT do
             for k,d in ipairs(DIRECTIONS) do
                 if maze[i][j][d] then
-                    love.graphics.draw(SQUARES[d], (i-1)*SQUARE_SIZE, (j-1)*SQUARE_SIZE, 0, 2)
+                    love.graphics.draw(img, SQUARES[d], (i-1)*SQUARE_SIZE, (j-1)*SQUARE_SIZE, 0, SQUARE_SIZE/32)
                 end
             end
-            local square = maze[i][j]
-            if square.left and square.right and square.up and square.down then
-                love.graphics.draw(SQUARES.wall, (i-1)*SQUARE_SIZE, (j-1)*SQUARE_SIZE, 0, 2)
+            if newsquare(maze[i][j]) then
+                love.graphics.draw(img, SQUARES.wall, (i-1)*SQUARE_SIZE, (j-1)*SQUARE_SIZE, 0, SQUARE_SIZE/32)
             end
         end
     end

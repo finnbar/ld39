@@ -5,8 +5,11 @@ for _,j in pairs(requires) do
 end
 
 hide = true
+pointlight = love.graphics.newImage("pointlight.png") -- 16x16
+pointlight:setFilter("nearest")
 
 function love.load()
+    love.graphics.setDefaultFilter("nearest", "nearest")
     math.randomseed(os.time())
     maze = makemaze()
     canvas = love.graphics.newCanvas()
@@ -23,7 +26,7 @@ function love.draw()
             love.graphics.rectangle("fill",0,0,800,600)
             love.graphics.setBlendMode("lighten", "premultiplied")
             love.graphics.setColor(255,255,255,255)
-            love.graphics.circle("fill",x,y,50)
+            love.graphics.draw(pointlight,x,y,0,8,8)
         love.graphics.setCanvas()
         love.graphics.setBlendMode("darken", "premultiplied")
         love.graphics.draw(canvas,0,0)

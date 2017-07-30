@@ -1,4 +1,4 @@
-requires = {"game", "title"}
+requires = {"game", "title", "generate", "useful"}
 
 for _,j in pairs(requires) do
     require(j)
@@ -8,7 +8,7 @@ local gamestate
 
 function love.load()
     math.randomseed(os.time())
-    gamestate = title
+    gamestate = game
     if gamestate.setup then gamestate.setup() end
 end
 

@@ -16,11 +16,7 @@ function game.draw()
 end
 
 function game.keypressed(key, scancode, isrepeat)
-    if key == "left" then
-        character.direction = "left"
-    elseif key == "right" then
-        character.direction = "right"
-    end
+    characterkeypressed(character, key, scancode, isrepeat)
     return game
 end
 

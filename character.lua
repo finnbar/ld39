@@ -1,7 +1,7 @@
 
-SPEED = 20
+SPEED = 25
 UPSPEED = 3
-DOWNSPEED = 30
+DOWNSPEED = 35
 BUFFER = 2
 CHARACTER_HEIGHT = 15
 CHARACTER_WIDTH = 10
@@ -121,6 +121,7 @@ function characterkeypressed(character, key, scancode, isrepeat)
             end
         elseif squaretype == "topladder" or squaretype == "middleladder" or squaretype == "bottomladder" then
             character.onladder = true
+            character.x, character.y = getCharacterXY(i,j)
             character.direction = "none"
         end
     end

@@ -1,7 +1,4 @@
--- Nothing yet!
 game = {}
-
-local maze
 
 function game.setup()
     love.graphics.setDefaultFilter('nearest', 'nearest')

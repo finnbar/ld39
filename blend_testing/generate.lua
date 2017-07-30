@@ -178,6 +178,18 @@ function drawmaze(maze)
     end
 end
 
+function listblocked(maze)
+    blocked = {}
+    for i=1,GRID_WIDTH do
+        for j=1,GRID_HEIGHT do
+            if newsquare(maze[i][j]) then
+                table.insert(blocked, {i,j})
+            end
+        end
+    end
+    return blocked
+end
+
 function opposite(direction)
     if direction == "left" then return "right" end
     if direction == "right" then return "left" end

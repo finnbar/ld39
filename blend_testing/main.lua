@@ -27,6 +27,13 @@ function love.draw()
             love.graphics.setBlendMode("lighten", "premultiplied")
             love.graphics.setColor(255,255,255,255)
             love.graphics.draw(pointlight,x,y,0,8,8)
+            love.graphics.setBlendMode("darken", "premultiplied")
+            love.graphics.setColor(0,0,0)
+            for _,p in pairs(listblocked(maze)) do
+                local i,j = (p[1]-1)*SQUARE_SIZE, (p[2]-1)*SQUARE_SIZE
+                love.graphics.rectangle("fill", i, j, SQUARE_SIZE, SQUARE_SIZE)
+            end
+            love.graphics.setColor(255,255,255,255)
         love.graphics.setCanvas()
         love.graphics.setBlendMode("darken", "premultiplied")
         love.graphics.draw(canvas,0,0)

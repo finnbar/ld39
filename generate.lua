@@ -7,18 +7,6 @@ NEW_AGENT_PROB = 0.07
 DEATH_RATE = 0.05
 KEEP_GOING = 1 -- if you increase it above 1, it will do stuff.
 
-img = love.graphics.newImage("tileset.png")
-
-SQUARES = {up = love.graphics.newQuad(8*32, 0, 32, 32, img:getDimensions()),
-           down = love.graphics.newQuad(6*32, 0, 32, 32, img:getDimensions()),
-           left = love.graphics.newQuad(5*32, 0, 32, 32, img:getDimensions()),
-           right =love.graphics.newQuad(7*32, 0, 32, 32, img:getDimensions()),
-           wall = love.graphics.newQuad(4*32, 0, 32, 32, img:getDimensions()),
-           empty = love.graphics.newQuad(0, 0, 32, 32, img:getDimensions()),
-           bottomladder = love.graphics.newQuad(3*32, 0, 32, 32, img:getDimensions()),
-           middleladder = love.graphics.newQuad(1*32, 0, 32, 32, img:getDimensions()),
-           topladder = love.graphics.newQuad(2*32, 0, 32, 32, img:getDimensions())}
-
 function makemaze()
     local maze = {}
     for i=1,GRID_WIDTH do
@@ -122,6 +110,26 @@ function makemaze()
             end
         end
     end
+
+    -- Say which squares have ladders etc. so you don't always need to check
+    for i=1,GRID_WIDTH do
+        for j=1,GRID_HEIGHT do
+            maze[i][j].baseimage = "wall"
+            if not newsquare(maze[i][j]) then
+                if not maze[i][j]["up"] then
+                    if not maze[i][j]["down"] then
+                        maze[i][j].baseimage = "middleladder"
+                    else
+                        maze[i][j].baseimage = "topladder"
+                    end
+                elseif not maze[i][j]["down"] then
+                    maze[i][j].baseimage = "bottomladder"
+                else
+                    maze[i][j].baseimage = "empty" 
+                end
+            end
+        end
+    end
     return maze
 end
 
@@ -147,34 +155,6 @@ function makechoice(probs)
     for i=1,4 do
         total = total + probs[DIRECTIONS[i]]
         if r <= total/t then return DIRECTIONS[i] end
-    end
-end
-
-function drawmaze(maze)
-    love.graphics.setBackgroundColor(255, 255, 255)
-    for i=1,GRID_WIDTH do
-        for j=1,GRID_HEIGHT do
-            local baseimage = SQUARES.wall
-            if not newsquare(maze[i][j]) then
-                if not maze[i][j]["up"] then
-                    if not maze[i][j]["down"] then
-                        baseimage = SQUARES.middleladder
-                    else
-                        baseimage = SQUARES.topladder
-                    end
-                elseif not maze[i][j]["down"] then
-                    baseimage = SQUARES.bottomladder
-                else
-                    baseimage = SQUARES.empty
-                end
-            end
-            love.graphics.draw(img, baseimage, (i-1)*SQUARE_SIZE, (j-1)*SQUARE_SIZE, 0, SQUARE_SIZE/32)
-            for k,d in ipairs(DIRECTIONS) do
-                if maze[i][j][d] then
-                    love.graphics.draw(img, SQUARES[d], (i-1)*SQUARE_SIZE, (j-1)*SQUARE_SIZE, 0, SQUARE_SIZE/32)
-                end
-            end
-        end
     end
 end
 

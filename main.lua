@@ -1,10 +1,11 @@
-requires = {"game", "title", "generate", "useful"}
+requires = {"game", "title", "generate", "useful", "rendermaze"}
 
 for _,j in pairs(requires) do
     require(j)
 end
 
 local gamestate
+local maze
 
 function love.load()
     math.randomseed(os.time())

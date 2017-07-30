@@ -2,10 +2,15 @@ GRID_WIDTH = 40
 GRID_HEIGHT = 30
 SQUARE_SIZE = 20
 DIRECTIONS = {"up", "down", "left", "right"}
+
+-- Base probabilites for each direction, changing them makes a significant difference to mazes generated
 PROBABILITIES = {up = 0.15, down = 0.05, left = 0.4, right = 0.4}
 NEW_AGENT_PROB = 0.07
 DEATH_RATE = 0.05
-KEEP_GOING = 1 -- if you increase it above 1, it will do stuff.
+
+-- KEEP_GOING will increase prob of continuing in same direction if > 1 and decrease otherwise
+-- Note turning back is already forbidden so this isn't very necessary
+KEEP_GOING = 1
 
 function makemaze()
     local maze = {}
@@ -15,10 +20,12 @@ function makemaze()
             maze[i][j] = {left = true, right = true, up = true, down = true}
         end
     end
+
+    -- initially two agents likely to move in opposite directions
     local agents = {{pos = {i = math.floor(GRID_WIDTH / 2), j = GRID_HEIGHT}, alive = true, last = "left"},
                     {pos = {i = math.floor(GRID_WIDTH / 2), j = GRID_HEIGHT}, alive = true, last = "right"}}
     local agentcount = 2
-    local movessincesuccess = 0
+    local movessincesuccess = 0 -- if nothing changes in a few moves, give up
     local unfinished = true
     while unfinished do
         local success = false
@@ -106,7 +113,7 @@ function makemaze()
         else
             movessincesuccess = movessincesuccess + 1
             if movessincesuccess > 10 then
-                return makemaze()
+                return makemaze() -- give up and try again
             end
         end
     end

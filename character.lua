@@ -1,24 +1,31 @@
 
-SPEED = 25
-UPSPEED = 3
+UPSPEED = 3 -- pixels climbed each time you press space bar
+SPEED = 35
 DOWNSPEED = 35
-BUFFER = 2
-CHARACTER_HEIGHT = 15
-CHARACTER_WIDTH = 10
-DELAY = 0.5
+BUFFER = 2 -- to stop character from hitting walls
+
+DELAY = 0.5 -- occurs when climbing off ladders so you don't fall immediately
+
 local characterimage = love.graphics.newImage("tempcharacter.png")
 local characterladderimage = love.graphics.newImage("tempcharacterladder.png")
+CHARACTER_HEIGHT = 15
+CHARACTER_WIDTH = CHARACTER_HEIGHT * characterimage:getWidth() / characterimage:getHeight()
 
-function getCharacterXY(i,j)
+-- These functions convert between the x,y coordinates for drawing and the i,j coordinates
+-- of the points on the grid.
+
+function getcharacterxy(i,j)
     local x = (i-0.5) * SQUARE_SIZE
     local y = (j-0.5) * SQUARE_SIZE
     return x,y
 end
 
-function getGridCoord(x)
+function getgridcoord(x)
     return math.ceil(x / SQUARE_SIZE)
 end
 
+-- The characters position is stored as the x,y coordinates of its middle.
+-- These functions find the coordinates of their left, right, top and bottom
 function charleft(character)
     return character.x - character.width/2
 end
@@ -36,8 +43,8 @@ function chardown(character)
 end
 
 function getIJ(x,y)
-    local i = getGridCoord(x)
-    local j = getGridCoord(y)
+    local i = getgridcoord(x)
+    local j = getgridcoord(y)
     if i < 1 then i = 1 end
     if i > GRID_WIDTH then i = GRID_WIDTH end
     if j < 1 then j = 1 end
@@ -52,26 +59,33 @@ function drawcharacter(character)
     else
         image = characterimage
     end
-    love.graphics.draw(image, charleft(character) , charup(character), 0, character.height / characterimage:getHeight())
+    love.graphics.draw(image, charleft(character) , charup(character), 0, character.height / image:getHeight())
 end
 
 function updatecharacter(character, dt)
     character.delay = character.delay + dt
+
     if character.direction == "left" then
-        local old_left = getGridCoord(charleft(character))
-        local new_left = getGridCoord(charleft(character) - SPEED * dt - BUFFER)
-        local top = getGridCoord(charup(character))
-        local bottom = getGridCoord(chardown(character))
+        local old_left = getgridcoord(charleft(character))
+        local new_left = getgridcoord(charleft(character) - SPEED * dt - BUFFER)
+        local top = getgridcoord(charup(character))
+        local bottom = getgridcoord(chardown(character))
+
+        -- move left as long as there isn't a wall in the way
+        -- first test is for vertical | | walls, second is for horizontal _ walls
         if new_left ~= old_left - 1 or not (maze[old_left][top].left or maze[old_left][bottom].left) then
             if top == bottom or old_left == new_left or not maze[new_left][top].down then 
                 character.x = character.x - SPEED * dt
             end
         end
     elseif character.direction == "right" then
-        local old_right = getGridCoord(charright(character))
-        local new_right = getGridCoord(charright(character) + SPEED * dt + BUFFER) 
-        local top = getGridCoord(charup(character))
-        local bottom = getGridCoord(chardown(character))
+        local old_right = getgridcoord(charright(character))
+        local new_right = getgridcoord(charright(character) + SPEED * dt + BUFFER) 
+        local top = getgridcoord(charup(character))
+        local bottom = getgridcoord(chardown(character))
+
+        -- move right as long as there isn't a wall in the way
+        -- first test is for vertical | | walls, second is for horizontal _ walls
         if new_right ~= old_right + 1 or not (maze[old_right][top].right or maze[old_right][bottom].right) then
             if top == bottom or old_right == new_right or not maze[new_right][top].down then
                 character.x = character.x + SPEED * dt
@@ -79,11 +93,11 @@ function updatecharacter(character, dt)
         end
     end
 
-    -- Implement gravity
+    -- Implement some kind of "gravity"
     if not character.onladder and character.delay > DELAY then
         local bottomy = chardown(character)
         local i,j = getIJ(character.x, bottomy)
-        local i2, i3 = getGridCoord(charleft(character)), getGridCoord(charright(character))
+        local i2, i3 = getgridcoord(charleft(character)), getgridcoord(charright(character))
         if (not (maze[i][j].down or maze[i2][j].down or maze[i3][j].down) or SQUARE_SIZE*j - bottomy > BUFFER) then
             character.y = character.y + DOWNSPEED * dt
         end
@@ -92,11 +106,12 @@ end
 
 function makecharacter(character)
     local i, j = GRID_WIDTH/2, GRID_HEIGHT
-    local x,y = getCharacterXY(i,j)
+    local x,y = getcharacterxy(i,j)
     return {x = x, y = y, width = CHARACTER_WIDTH, height = CHARACTER_HEIGHT, direction = "none", onladder = false, delay = 0}
 end
 
 function characterkeypressed(character, key, scancode, isrepeat)
+    -- moving left and right
     if key == "left" then
         character.direction = "left"
         if character.onladder then
@@ -110,6 +125,8 @@ function characterkeypressed(character, key, scancode, isrepeat)
             character.delay = 0
         end
     end
+
+    -- climbing ladders
     if key == "space" then
         local i,j = getIJ(character.x, character.y)
         local squaretype = maze[i][j].baseimage
@@ -121,7 +138,7 @@ function characterkeypressed(character, key, scancode, isrepeat)
             end
         elseif squaretype == "topladder" or squaretype == "middleladder" or squaretype == "bottomladder" then
             character.onladder = true
-            character.x, character.y = getCharacterXY(i,j)
+            character.x, character.y = getcharacterxy(i,j)
             character.direction = "none"
         end
     end

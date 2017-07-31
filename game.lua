@@ -2,7 +2,7 @@ game = {}
 
 local gamera = require("gamera")
 
-local hide = false -- for debugging, set to false so we can see the whole grid
+local hide = true -- for debugging, set to false so we can see the whole grid
 
 local pointlight = love.graphics.newImage("pointlight.png") -- 19 x 19
 LIGHT_SCALE = 5
@@ -31,7 +31,7 @@ function game.draw()
         else
             love.graphics.rectangle("fill",0,0,800,600)
         end
-        love.graphics.setBlendMode("darken", "premultiplied")
+        love.graphics.setBlendMode("multiply", "premultiplied")
         love.graphics.setColor(255,255,255,255)
         drawmaze(maze)
         love.graphics.setBlendMode("alpha", "premultiplied")

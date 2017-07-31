@@ -5,8 +5,8 @@ DIRECTIONS = {"up", "down", "left", "right"}
 
 -- Base probabilites for each direction, changing them makes a significant difference to mazes generated
 PROBABILITIES = {up = 0.15, down = 0.05, left = 0.4, right = 0.4}
-NEW_AGENT_PROB = 0.07
-DEATH_RATE = 0.05
+NEW_AGENT_PROB = 0.15
+DEATH_RATE = 0.13
 
 -- KEEP_GOING will increase prob of continuing in same direction if > 1 and decrease otherwise
 -- Note turning back is already forbidden so this isn't very necessary
@@ -31,6 +31,7 @@ function makemaze()
         local success = false
         for _, agent in ipairs(agents) do
             if agent.alive then
+                local newagent = deepcopy(agent) -- in case we need it later
                 local i = agent.pos.i
                 local j = agent.pos.j
                 local probs = deepcopy(PROBABILITIES)
@@ -41,6 +42,7 @@ function makemaze()
                 if j == GRID_HEIGHT then probs.down = 0 end
                 if agent.last == "right" then probs.right = probs.right * KEEP_GOING end
                 if agent.last == "left" then probs.left = probs.left * KEEP_GOING end
+                if agent.avoid then probs[agent.avoid] = 0 end
                 probs[opposite(agent.last)] = 0
 
                 local direction = makechoice(probs)
@@ -90,11 +92,13 @@ function makemaze()
                 if walldestroyed then
                     maze[i][j][direction] = false
                     success = true
+                    agent.avoid = nil
                 end
 
                 if agent.alive then
-                    if math.random() < NEW_AGENT_PROB then
-                        table.insert(agents, deepcopy(agent))
+                    if walldestroyed and math.random() < NEW_AGENT_PROB then
+                        newagent.avoid = agent.last
+                        table.insert(agents, newagent)
                         agentcount = agentcount + 1
                     end
 

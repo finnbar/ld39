@@ -13,7 +13,7 @@ SQUARES = {up = love.graphics.newQuad(8*TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, img:
 
 
 function drawmaze(maze)
-    love.graphics.setBackgroundColor(255, 255, 255)
+    --love.graphics.setBackgroundColor(255, 255, 255)
     for i=1,GRID_WIDTH do
         for j=1,GRID_HEIGHT do
             love.graphics.draw(img, SQUARES[maze[i][j].baseimage], (i-1)*SQUARE_SIZE, (j-1)*SQUARE_SIZE, 0, SQUARE_SIZE/TILE_SIZE)

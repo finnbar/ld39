@@ -52,6 +52,16 @@ function getIJ(x,y)
     return i,j
 end
 
+function wallbelow(character)
+    local i,j = getIJ(character.x, chardown(character))
+    local i2, i3 = getgridcoord(charleft(character)), getgridcoord(charright(character))
+    if i2 ~= i3 and maze[i2][j-1].right then
+        return true
+    else
+        return maze[i][j].down or maze[i2][j].down or maze[i3][j].down 
+    end
+end
+
 function drawcharacter(character)
     local image
     if character.onladder then
@@ -94,7 +104,7 @@ function updatecharacter(character, dt)
         local bottomy = chardown(character)
         local i,j = getIJ(character.x, bottomy)
         local i2, i3 = getgridcoord(charleft(character)), getgridcoord(charright(character))
-        if (not (maze[i][j].down or maze[i2][j].down or maze[i3][j].down) or SQUARE_SIZE*j - bottomy > BUFFER) then
+        if (not wallbelow(character) or SQUARE_SIZE*j - bottomy > BUFFER) then
             character.y = character.y + DOWNSPEED * dt
         else
             _, character.y = getcharacterxy(i,j)

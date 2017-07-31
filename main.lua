@@ -1,14 +1,14 @@
 requires = {"game", "title", "generate", "useful", "rendermaze", "character"}
 
-for _,j in pairs(requires) do
-    require(j)
-end
-
 local gamestate
 local maze
 
 function love.load()
     math.randomseed(os.time())
+    love.graphics.setDefaultFilter("nearest", "nearest")
+    for _,j in pairs(requires) do
+        require(j)
+    end
     gamestate = game
     if gamestate.setup then gamestate.setup() end
 end

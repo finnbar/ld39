@@ -2,7 +2,7 @@ game = {}
 
 local gamera = require("gamera")
 
-local hide = false -- for debugging, set to false so we can see the whole grid
+local hide = true -- for debugging, set to false so we can see the whole grid
 
 local pointlight = love.graphics.newImage("pointlight.png") -- 19 x 19
 LIGHT_SCALE = 5

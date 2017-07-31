@@ -31,7 +31,7 @@ function game.draw()
         else
             love.graphics.rectangle("fill",0,0,800,600)
         end
-        love.graphics.setBlendMode("darken", "premultiplied")
+        love.graphics.setBlendMode("multiply", "premultiplied")
         love.graphics.setColor(255,255,255,255)
         drawmaze(maze)
         love.graphics.setBlendMode("alpha", "premultiplied")

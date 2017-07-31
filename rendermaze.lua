@@ -17,10 +17,16 @@ function drawmaze(maze)
     for i=1,GRID_WIDTH do
         for j=1,GRID_HEIGHT do
             love.graphics.draw(img, SQUARES[maze[i][j].baseimage], (i-1)*SQUARE_SIZE, (j-1)*SQUARE_SIZE, 0, SQUARE_SIZE/TILE_SIZE)
+            allwalls = true
             for _,d in ipairs(DIRECTIONS) do
                 if maze[i][j][d] then
                     love.graphics.draw(img, SQUARES[d], (i-1)*SQUARE_SIZE, (j-1)*SQUARE_SIZE, 0, SQUARE_SIZE/TILE_SIZE)
+                else
+                    allwalls = false
                 end
+            end
+            if allwalls then
+                love.graphics.draw(img, SQUARES["wall"], (i-1)*SQUARE_SIZE, (j-1)*SQUARE_SIZE, 0, SQUARE_SIZE / TILE_SIZE)
             end
         end
     end

@@ -72,7 +72,7 @@ function updatecharacter(character, dt)
         -- move left as long as there isn't a wall in the way
         -- first test is for vertical | | walls, second is for horizontal _ walls
         if new_left ~= old_left - 1 or not (maze[old_left][top].left or maze[old_left][bottom].left) then
-            if top == bottom or old_left == new_left or not maze[new_left][top].down then 
+            if top == bottom or old_left == new_left or not maze[new_left][top].down then
                 character.x = character.x - SPEED * dt
             end
         end
@@ -125,7 +125,7 @@ function characterkeypressed(character, key, scancode, isrepeat)
         if character.onladder then
             character.onladder = false
             character.delay = 0
-        end        
+        end
     elseif key == "right" then
         character.direction = "right"
         if character.onladder then

@@ -1,7 +1,7 @@
 
 UPSPEED = 3 -- pixels climbed each time you press space bar
 SPEED = 35
-DOWNSPEED = 35
+DOWNSPEED = 40
 BUFFER = 2 -- to stop character from hitting walls
 
 DELAY = 0.5 -- occurs when climbing off ladders so you don't fall immediately
@@ -66,10 +66,8 @@ function updatecharacter(character, dt)
     character.delay = character.delay + dt
 
     if character.direction == "left" then
-        local old_left = getgridcoord(charleft(character))
-        local new_left = getgridcoord(charleft(character) - SPEED * dt - BUFFER)
-        local top = getgridcoord(charup(character))
-        local bottom = getgridcoord(chardown(character))
+        local old_left,top = getIJ(charleft(character), charup(character))
+        local new_left,bottom = getIJ(charleft(character) - SPEED * dt - BUFFER, chardown(character))
 
         -- move left as long as there isn't a wall in the way
         -- first test is for vertical | | walls, second is for horizontal _ walls
@@ -79,10 +77,8 @@ function updatecharacter(character, dt)
             end
         end
     elseif character.direction == "right" then
-        local old_right = getgridcoord(charright(character))
-        local new_right = getgridcoord(charright(character) + SPEED * dt + BUFFER) 
-        local top = getgridcoord(charup(character))
-        local bottom = getgridcoord(chardown(character))
+        local old_right, top = getIJ(charright(character), charup(character))
+        local new_right, bottom = getIJ(charright(character) + SPEED * dt + BUFFER, chardown(character)) 
 
         -- move right as long as there isn't a wall in the way
         -- first test is for vertical | | walls, second is for horizontal _ walls
@@ -100,8 +96,20 @@ function updatecharacter(character, dt)
         local i2, i3 = getgridcoord(charleft(character)), getgridcoord(charright(character))
         if (not (maze[i][j].down or maze[i2][j].down or maze[i3][j].down) or SQUARE_SIZE*j - bottomy > BUFFER) then
             character.y = character.y + DOWNSPEED * dt
+        else
+            _, character.y = getcharacterxy(i,j)
+            character.y =  character.y + SQUARE_SIZE / 2 - character.height / 2 - BUFFER / 2
         end
     end
+
+    -- Rescue operation!!! If falling through a wall.
+    local left,middle = getIJ(charleft(character), character.y)
+    local right,bottom = getIJ(charright(character), chardown(character))
+    if middle ~= bottom and (maze[left][middle].down or maze[right][middle].down) then
+        _, character.y = getcharacterxy(left,middle)
+        character.y =  character.y + SQUARE_SIZE / 2 - character.height / 2 - BUFFER / 2
+    end
+
 end
 
 function makecharacter(character)
@@ -138,7 +146,7 @@ function characterkeypressed(character, key, scancode, isrepeat)
             end
         elseif squaretype == "topladder" or squaretype == "middleladder" or squaretype == "bottomladder" then
             character.onladder = true
-            character.x, character.y = getcharacterxy(i,j)
+            character.x, _ = getcharacterxy(i,j)
             character.direction = "none"
         end
     end

@@ -89,14 +89,11 @@ function makemaze()
 
                 if walldestroyed then
                     maze[i][j][direction] = false
-                else
                     success = true
                 end
 
                 if agent.alive then
                     if math.random() < NEW_AGENT_PROB then
-                        local newagent = deepcopy(agent)
-                        newagent.last = opposite(agent.last)
                         table.insert(agents, deepcopy(agent))
                         agentcount = agentcount + 1
                     end
@@ -118,7 +115,7 @@ function makemaze()
         end
     end
 
-    -- Say which squares have ladders etc. so you don't always need to check
+    -- Store the base image of each square
     for i=1,GRID_WIDTH do
         for j=1,GRID_HEIGHT do
             maze[i][j].baseimage = "wall"

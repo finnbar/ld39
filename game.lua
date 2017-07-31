@@ -1,17 +1,38 @@
 game = {}
 
+local hide = false -- for debugging, set to false so we can see the whole grid
+
+local pointlight = love.graphics.newImage("pointlight.png") -- 19 x 19
+
 local character
 
 function game.setup()
     love.graphics.setDefaultFilter('nearest', 'nearest')
     maze = makemaze()
     character = makecharacter()
+    canvas = love.graphics.newCanvas()
     return game
 end
 
 function game.draw()
+    love.graphics.setBlendMode("alpha", "premultiplied")
+    local x,y = character.x - 8*19/2, character.y - 8*19/2
     drawmaze(maze)
     drawcharacter(character)
+    if hide then
+        love.graphics.setCanvas(canvas)
+            love.graphics.clear()
+            love.graphics.setColor(0,0,0)
+            love.graphics.rectangle("fill",0,0,800,600)
+            love.graphics.setBlendMode("lighten", "premultiplied")
+            love.graphics.setColor(255,255,255,255)
+            love.graphics.draw(pointlight,x,y,0,8,8)
+            love.graphics.setBlendMode("darken", "premultiplied")
+            love.graphics.setColor(255,255,255,255)
+        love.graphics.setCanvas()
+        love.graphics.setBlendMode("darken", "premultiplied")
+        love.graphics.draw(canvas,0,0)
+    end
     return game
 end
 

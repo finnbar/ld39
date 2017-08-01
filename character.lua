@@ -58,7 +58,7 @@ function wallbelow(character)
     if i2 ~= i3 and maze[i2][j-1].right then
         return true
     else
-        return maze[i][j].down or maze[i2][j].down or maze[i3][j].down 
+        return maze[i][j].down or maze[i2][j].down or maze[i3][j].down
     end
 end
 
@@ -88,7 +88,7 @@ function updatecharacter(character, dt)
         end
     elseif character.direction == "right" then
         local old_right, top = getIJ(charright(character), charup(character))
-        local new_right, bottom = getIJ(charright(character) + SPEED * dt + BUFFER, chardown(character)) 
+        local new_right, bottom = getIJ(charright(character) + SPEED * dt + BUFFER, chardown(character))
 
         -- move right as long as there isn't a wall in the way
         -- first test is for vertical | | walls, second is for horizontal _ walls

@@ -3,8 +3,6 @@ game = {}
 local gamera = require("gamera")
 
 local hide = true -- for debugging, set to false so we can see the whole grid
-
-local pointlight = love.graphics.newImage("pointlight.png") -- 19 x 19
 LIGHT_SCALE = 5
 
 local character
@@ -27,7 +25,8 @@ function game.draw()
         love.graphics.setBlendMode("lighten", "premultiplied")
         love.graphics.setColor(255,255,255,255)
         if hide then
-            love.graphics.draw(pointlight,x,y,0,LIGHT_SCALE)
+            pointlight(x,y,LIGHT_SCALE)
+            --torchlight(x,y,15,5,0)
         else
             love.graphics.rectangle("fill",0,0,800,600)
         end

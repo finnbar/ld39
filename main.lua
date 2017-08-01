@@ -1,4 +1,4 @@
-requires = {"game", "title", "generate", "useful", "rendermaze", "character"}
+requires = {"game", "title", "generate", "useful", "rendermaze", "character", "light"}
 
 local gamestate
 local maze

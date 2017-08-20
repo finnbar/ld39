@@ -1,5 +1,5 @@
 TILE_SIZE = 32
-img = love.graphics.newImage("tileset.png")
+img = love.graphics.newImage("assets/tileset.png")
 
 SQUARES = {up = love.graphics.newQuad(8*TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, img:getDimensions()),
            down = love.graphics.newQuad(6*TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, img:getDimensions()),

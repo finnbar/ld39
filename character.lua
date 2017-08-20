@@ -6,8 +6,8 @@ BUFFER = 2 -- to stop character from hitting walls
 
 DELAY = 0.5 -- occurs when climbing off ladders so you don't fall immediately
 
-local characterimage = love.graphics.newImage("tempcharacter.png")
-local characterladderimage = love.graphics.newImage("tempcharacterladder.png")
+local characterimage = love.graphics.newImage("assets/tempcharacter.png")
+local characterladderimage = love.graphics.newImage("assets/tempcharacterladder.png")
 CHARACTER_HEIGHT = 15
 CHARACTER_WIDTH = CHARACTER_HEIGHT * characterimage:getWidth() / characterimage:getHeight()
 

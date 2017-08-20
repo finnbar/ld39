@@ -6,10 +6,35 @@ BUFFER = 2 -- to stop character from hitting walls
 
 DELAY = 0.5 -- occurs when climbing off ladders so you don't fall immediately
 
-local characterimage = love.graphics.newImage("assets/tempcharacter.png")
-local characterladderimage = love.graphics.newImage("assets/tempcharacterladder.png")
+IMAGE_WIDTH = 30
+IMAGE_HEIGHT = 40
+
+ANIMATION_RATE = 0.1
+
+local walkingleft = {image = love.graphics.newImage("assets/characterwalkleft.png"), number = 10, cyclemode = "TIMER", time = ANIMATION_RATE}
+local walkingright = {image = love.graphics.newImage("assets/characterwalkright.png"), number = 10, cyclemode = "TIMER", time = ANIMATION_RATE}
+local idleleft = {image = love.graphics.newImage("assets/characteridleleft.png"), number = 1, cyclemode = "NONE"}
+local idleright = {image = love.graphics.newImage("assets/characteridleright.png"), number = 1, cyclemode = "NONE"}
+local ladder = {image = love.graphics.newImage("assets/characterladder.png"), number = 2, cyclemode = "SPACE"}
+local quads = {}
+
+-- Add quads to the character images to get specific frames
+for _,img in ipairs({walkingright, idleleft, idleright, ladder}) do
+    img.quads = {}
+    for i = 0,(img.number-1) do
+        table.insert(img.quads, love.graphics.newQuad(IMAGE_WIDTH*i, 0, IMAGE_WIDTH, IMAGE_HEIGHT, img.image:getDimensions()))
+    end
+end
+
+-- Do the walking left guy separately to put the quads in backwards
+walkingleft.quads = {}
+for i = (walkingleft.number-1),0,-1 do
+    table.insert(walkingleft.quads, love.graphics.newQuad(IMAGE_WIDTH*i, 0, IMAGE_WIDTH, IMAGE_HEIGHT, walkingleft.image:getDimensions()))
+end
+
+
 CHARACTER_HEIGHT = 15
-CHARACTER_WIDTH = CHARACTER_HEIGHT * characterimage:getWidth() / characterimage:getHeight()
+CHARACTER_WIDTH = CHARACTER_HEIGHT * IMAGE_WIDTH/IMAGE_HEIGHT
 
 -- These functions convert between the x,y coordinates for drawing and the i,j coordinates
 -- of the points on the grid.
@@ -63,17 +88,34 @@ function wallbelow(character)
 end
 
 function drawcharacter(character)
-    local image
-    if character.onladder then
-        image = characterladderimage
-    else
-        image = characterimage
+    local image = character.cycler.characterstate.image
+    local quad = character.cycler.characterstate.quads[character.cycler.number]
+    love.graphics.draw(image, quad, charleft(character) , charup(character), 0, character.height / IMAGE_HEIGHT)
+end
+
+function changecycler(cycler, newvalue)
+    cycler.characterstate = newvalue
+    cycler.number = 1
+end
+
+function cyclecycler(cycler)
+    cycler.number = cycler.number + 1
+    if cycler.number > cycler.characterstate.number then
+        cycler.number = 1
     end
-    love.graphics.draw(image, charleft(character) , charup(character), 0, character.height / image:getHeight())
+    cycler.time = 0
+end
+
+function updatecycler(cycler, dt)
+    cycler.time = cycler.time + dt
+    if cycler.characterstate.cyclemode == "TIMER" and cycler.time > cycler.characterstate.time then
+        cyclecycler(cycler)
+    end
 end
 
 function updatecharacter(character, dt)
     character.delay = character.delay + dt
+    updatecycler(character.cycler, dt)
 
     if character.direction == "left" then
         local old_left,top = getIJ(charleft(character), charup(character))
@@ -125,7 +167,8 @@ end
 function makecharacter(character)
     local i, j = GRID_WIDTH/2, GRID_HEIGHT
     local x,y = getcharacterxy(i,j)
-    return {x = x, y = y, width = CHARACTER_WIDTH, height = CHARACTER_HEIGHT, direction = "none", onladder = false, delay = 0}
+    return {x = x, y = y, width = CHARACTER_WIDTH, height = CHARACTER_HEIGHT, direction = "none", onladder = false, delay = 0,
+           cycler = {characterstate = idleright, number = 1, time = 0}}
 end
 
 function characterkeypressed(character, key, scancode, isrepeat)
@@ -136,12 +179,14 @@ function characterkeypressed(character, key, scancode, isrepeat)
             character.onladder = false
             character.delay = 0
         end
+        changecycler(character.cycler, walkingleft)
     elseif key == "right" then
         character.direction = "right"
         if character.onladder then
             character.onladder = false
             character.delay = 0
         end
+        changecycler(character.cycler, walkingright)
     end
 
     -- climbing ladders
@@ -153,11 +198,24 @@ function characterkeypressed(character, key, scancode, isrepeat)
             local _,newup = getIJ(character.x, charup(character) - UPSPEED - BUFFER)
             if oldup == newup or not maze[i][oldup].up then
                 character.y = character.y - UPSPEED
+                cyclecycler(character.cycler)
             end
         elseif squaretype == "topladder" or squaretype == "middleladder" or squaretype == "bottomladder" then
             character.onladder = true
             character.x, _ = getcharacterxy(i,j)
             character.direction = "none"
+            changecycler(character.cycler, ladder)
         end
+    end
+end
+
+function characterkeyreleased(character, key)
+    if key == "left" or key == "right" then
+        if character.direction == "left" then
+            changecycler(character.cycler, idleleft)
+        elseif character.direction == "right" then
+            changecycler(character.cycler, idleright)
+        end
+        character.direction = "none"
     end
 end

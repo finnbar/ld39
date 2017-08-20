@@ -46,9 +46,7 @@ function game.keypressed(key, scancode, isrepeat)
 end
 
 function game.keyreleased(key)
-    if key == "left" or key == "right" then
-        character.direction = "none"
-    end
+    characterkeyreleased(character, key)
     return game
 end
 

@@ -27,6 +27,7 @@ function makemaze()
     local agentcount = 2
     local movessincesuccess = 0 -- if nothing changes in a few moves, give up
     local unfinished = true
+    local exitsquarei -- exitsquarej = 1
     while unfinished do
         local success = false
         for _, agent in ipairs(agents) do
@@ -67,6 +68,7 @@ function makemaze()
                     end
                 elseif direction == "up" then
                     if j == 1 then
+                        exitsquarei = i
                         unfinished = false
                     else
                         if wallcount(maze[i][j-1]) > 2 then
@@ -133,11 +135,12 @@ function makemaze()
                 elseif not maze[i][j]["down"] then
                     maze[i][j].baseimage = "bottomladder"
                 else
-                    maze[i][j].baseimage = "empty" 
+                    maze[i][j].baseimage = "empty"
                 end
             end
         end
     end
+    maze[exitsquarei][1].baseimage = "exit"
     return maze
 end
 

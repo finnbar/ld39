@@ -1,9 +1,9 @@
 ## Things we need to do to finish our game!
 
 ### IMPORTANT THINGS
-- [ ] Draw a main character
-- [ ] Make the character face the right way dependent on movement
-- [ ] Add exit squares to leave the maze
+- [x] Draw a main character
+- [x] Make the character face the right way dependent on movement
+- [x] Add exit squares to leave the maze
 - [ ] Add scraps of maps to maze which can be found
 - [ ] Display scrapbook with pieces of map found
 - [ ] Add controls for player to turn on and off the torchlight
@@ -12,6 +12,10 @@
 - [ ] Display power
 - [ ] Lose game when power runs out
 - [ ] Give the game a name
+- [ ] Put a wall on top of the exit square
+
+### Fix weird bugs
+- [ ] Probably not crashing when I get to the top would be nice.
 
 ### USEFUL THINGS BUT NOT THAT CRUCIAL
 - [ ] Add music

@@ -9,7 +9,8 @@ SQUARES = {up = love.graphics.newQuad(8*TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, img:
            empty = love.graphics.newQuad(0, 0, TILE_SIZE, TILE_SIZE, img:getDimensions()),
            bottomladder = love.graphics.newQuad(3*TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, img:getDimensions()),
            middleladder = love.graphics.newQuad(1*TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, img:getDimensions()),
-           topladder = love.graphics.newQuad(2*TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, img:getDimensions())}
+           topladder = love.graphics.newQuad(2*TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, img:getDimensions()),
+           exit = love.graphics.newQuad(9*TILE_SIZE, 0, TILE_SIZE, TILE_SIZE, img:getDimensions())}
 
 
 function drawmaze(maze)
